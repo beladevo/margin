@@ -36,7 +36,7 @@ Sleep 500ms
 Down@150ms 6
 Ctrl+E
 Enter
-Type "4. Record a demo GIF"
+Type "Record a demo GIF"
 Sleep 1s
 Screenshot docs/screenshots/edit.png
 Sleep 500ms

@@ -124,7 +124,7 @@ func (m Model) noteView(w, h int) string {
 		return clip(helpView(), h)
 	}
 	if m.mode == modeEdit {
-		return m.editor.ta.View()
+		return m.editor.view()
 	}
 	return m.viewport.View()
 }
@@ -191,7 +191,7 @@ func helpView() string {
 		var b strings.Builder
 		b.WriteString(styles.title.Render(title) + "\n")
 		for _, r := range rows {
-			fmt.Fprintf(&b, "  %s %s\n", styles.key.Render(fmt.Sprintf("%-10s", r[0])), r[1])
+			fmt.Fprintf(&b, "  %s %s\n", styles.key.Render(fmt.Sprintf("%-14s", r[0])), r[1])
 		}
 		return b.String()
 	}
@@ -211,6 +211,14 @@ func helpView() string {
 		}),
 		section("Edit", [][2]string{
 			{"esc", "save and stop editing"},
+			{"shift+arrows", "select"},
+			{"alt+←/→", "jump a word (shift selects)"},
+			{"ctrl+a", "select all"},
+			{"mouse", "click, drag, double-click a word"},
+			{"ctrl+c/x/v", "copy / cut / paste"},
+			{"tab/shift+tab", "indent / outdent"},
+			{"alt+↑/↓", "move line"},
+			{"shift+enter", "new line"},
 			{"ctrl+s", "save now"},
 			{"ctrl+z/y", "undo / redo"},
 		}),
@@ -277,7 +285,7 @@ func (m Model) statusView() string {
 	case m.status != "":
 		right = styles.saved.Render(m.status)
 	case m.mode == modeEdit:
-		right = styles.muted.Render("esc done · ctrl+s save · ctrl+z undo")
+		right = styles.muted.Render("esc done · shift+arrows select · ctrl+z undo")
 	default:
 		right = styles.muted.Render("e edit · n new · ctrl+p find · ? help")
 	}

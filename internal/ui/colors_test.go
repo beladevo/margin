@@ -81,3 +81,32 @@ func TestColorPlainWithoutColorSupport(t *testing.T) {
 		t.Fatalf("got %q", out)
 	}
 }
+
+func TestHighlightLine(t *testing.T) {
+	var hl lineHighlighter
+	check := func(line, sub string, want attr) {
+		t.Helper()
+		a := hl.line(line)
+		i := strings.Index(line, sub)
+		if a[i] != want {
+			t.Fatalf("%q in %q: got %+v, want %+v", sub, line, a[i], want)
+		}
+	}
+	check("## Title", "#", mdMarker)
+	check("## Title", "Title", mdHeading)
+	check("say **loud** now", "**", mdMarker)
+	check("say **loud** now", "loud", attr{bold: true})
+	check("an *it* word", "it", attr{italic: true})
+	check("snake_case_name", "case", attr{})
+	check("run `go test`", "go", mdCode)
+	check("- [x] shipped", "shipped", mdDone)
+	check("- item", "-", mdBullet)
+	check(`<span style="color:red">hot</span>`, "span", mdMarker)
+	check(`<span style="color:red">hot</span>`, "hot", attr{fg: lipgloss.Color("#FF5F5F")})
+	check("see [docs](https://x.dev)", "docs", mdLink)
+
+	check("```go", "go", mdMarker)
+	check("x := **1**", "1", mdCode)
+	check("```", "`", mdMarker)
+	check("**back**", "back", attr{bold: true})
+}

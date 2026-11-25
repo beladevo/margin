@@ -8,6 +8,9 @@ A terminal markdown notes editor. Your notes stay plain `.md` files in a folder,
 
 - **Folder tree** of your notes, with folders you can collapse
 - **Rendered markdown** by default ([Glamour](https://github.com/charmbracelet/glamour)); press `e` to edit the raw text
+- **Styled editing**: while you edit, headings, bold, code, links and colors are styled in place, with the markdown markers dimmed
+- **A real editor**: select with shift+arrows or the mouse, copy/cut/paste with the system clipboard, word jumps, list continuation, indent/outdent, move lines
+- **Colors**: `<span style="color:red">`, `<font color>` and `$\color{red}{\text{...}}$` render in color
 - **Autosave** while you type; every write is atomic (temp file + rename)
 - **Safe with other editors**: if a note changes on disk while you edit it, margin asks before overwriting
 - **Fuzzy finder** (`ctrl+p`) by note name and **full-text search** (`ctrl+f`) across all notes
@@ -28,6 +31,12 @@ A terminal markdown notes editor. Your notes stay plain `.md` files in a folder,
 
 ```sh
 go install github.com/beladevo/margin@latest
+```
+
+This puts `margin` in `$(go env GOPATH)/bin` (usually `~/go/bin`). If your shell can't find it, add that to your `PATH`:
+
+```sh
+echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.zshrc && source ~/.zshrc
 ```
 
 Or download a binary from [Releases](https://github.com/beladevo/margin/releases).
@@ -68,7 +77,16 @@ go run . /tmp/margin-examples
 
 | Edit | |
 |---|---|
-| `esc` | save and go back to the rendered view |
+| `esc` | save and go back to the rendered view (clears a selection first) |
+| `shift+arrows`, `shift+home/end` | select |
+| `alt+←/→` | jump a word (add `shift` to select) |
+| `ctrl+a` | select all |
+| mouse | click to place the cursor, drag to select, double-click a word |
+| `ctrl+c` / `ctrl+x` / `ctrl+v` | copy / cut (whole line if nothing is selected) / paste |
+| `alt+backspace` / `ctrl+w` | delete the previous word |
+| `enter` / `shift+enter` | new line; lists and quotes continue, an empty item ends the list |
+| `tab` / `shift+tab` | indent / outdent list items or the selected lines |
+| `alt+↑/↓` | move the line or selected lines |
 | `ctrl+s` | save now |
 | `ctrl+z` / `ctrl+y` | undo / redo |
 

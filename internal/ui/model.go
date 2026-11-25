@@ -101,6 +101,7 @@ type Model struct {
 	status    string
 	statusErr bool
 	quitArmed bool
+	mouseOn   bool
 
 	input        textinput.Model
 	inputErr     string
@@ -175,12 +176,26 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var model tea.Model
 		model, cmd = m.handleKey(msg)
 		m = model.(Model)
+	case tea.MouseMsg:
+		if m.mode == modeEdit && m.overlay == overlayNone {
+			m.editor.mouse(msg, msg.X-m.treeWidth()-2, msg.Y-1)
+		}
 	default:
 		if m.mode == modeEdit {
-			_, cmd = m.editor.update(msg)
+			if changed, _ := m.editor.update(msg); changed {
+				cmd = m.markDirty()
+			}
 		}
 	}
 	m.layout()
+	if wantMouse := m.mode == modeEdit; wantMouse != m.mouseOn {
+		m.mouseOn = wantMouse
+		toggle := tea.DisableMouse
+		if wantMouse {
+			toggle = tea.EnableMouseCellMotion
+		}
+		cmd = tea.Batch(cmd, toggle)
+	}
 	return m, cmd
 }
 
@@ -192,6 +207,10 @@ func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	m.status, m.statusErr = "", false
 
 	if k == "ctrl+c" {
+		if m.mode == modeEdit && m.overlay == overlayNone && m.editor.copySelection() {
+			m.setStatus("Copied")
+			return m, nil
+		}
 		return m.quit()
 	}
 	switch m.overlay {
@@ -345,6 +364,10 @@ func (m *Model) previewSelected() {
 func (m Model) updateEdit(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "esc":
+		if m.editor.hasSelection() {
+			m.editor.selecting = false
+			return m, nil
+		}
 		m.save()
 		if !m.dirty {
 			m.exitEdit()
@@ -518,7 +541,7 @@ func (m *Model) reloadFromDisk() {
 	m.dirty = false
 	m.conflict = conflictNone
 	if m.mode == modeEdit {
-		row := m.editor.ta.Line()
+		row := m.editor.cur.row
 		m.editor.load(content)
 		m.editor.gotoLine(row)
 	}
