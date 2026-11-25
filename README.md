@@ -2,22 +2,7 @@
 
 A terminal markdown notes editor. Your notes stay plain `.md` files in a folder, so they work with git, grep, Obsidian, or any other editor.
 
-```
-╭──────────────────────╮╭────────────────────────────────────────────────────╮
-│ ▾ ideas              ││    Welcome                                         │
-│     Side projects    ││                                                    │
-│ ▸ work               ││   This is margin, a terminal notes app.            │
-│   Welcome            ││                                                    │
-│                      ││   ## Features                                      │
-│                      ││                                                    │
-│                      ││   • Folder tree                                    │
-│                      ││   • Markdown rendering                             │
-│                      ││   • Autosave                                       │
-│                      ││                                                    │
-│                      ││     fmt.Println("hi")                              │
-╰──────────────────────╯╰────────────────────────────────────────────────────╯
- VIEW  Welcome.md                       e edit · n new · ctrl+p find · ? help
-```
+![margin demo](docs/demo.gif)
 
 ## Features
 
@@ -28,6 +13,16 @@ A terminal markdown notes editor. Your notes stay plain `.md` files in a folder,
 - **Fuzzy finder** (`ctrl+p`) by note name and **full-text search** (`ctrl+f`) across all notes
 - **Trash** instead of delete: removed notes go to `<notes>/.trash/`
 - Undo/redo, rename, folders, light/dark themes
+
+## Screenshots
+
+| Rendered note | Tables |
+|---|---|
+| ![Rendered markdown](docs/screenshots/view.png) | ![Table rendering](docs/screenshots/table.png) |
+| **Editing (autosaved)** | **Fuzzy finder (`ctrl+p`)** |
+| ![Edit mode](docs/screenshots/edit.png) | ![Fuzzy finder](docs/screenshots/finder.png) |
+| **Full-text search (`ctrl+f`)** | **Help (`?`)** |
+| ![Search](docs/screenshots/search.png) | ![Help](docs/screenshots/help.png) |
 
 ## Install
 
@@ -42,6 +37,16 @@ Or download a binary from [Releases](https://github.com/beladevo/margin/releases
 ```sh
 margin              # opens ~/notes (created if missing)
 margin ~/vault      # opens another folder
+```
+
+### Try it on the examples
+
+The repo ships a small notes folder in [`examples/notes`](examples/notes): meeting notes with task lists, a roadmap with a table, code snippets and a cheatsheet.
+
+```sh
+git clone https://github.com/beladevo/margin && cd margin
+cp -r examples/notes /tmp/margin-examples   # edits autosave, so work on a copy
+go run . /tmp/margin-examples
 ```
 
 ### Keys
@@ -86,6 +91,12 @@ autosave_delay = "1s"
 ```sh
 go test -race ./...
 golangci-lint run
+```
+
+The GIF and screenshots are recorded with [vhs](https://github.com/charmbracelet/vhs):
+
+```sh
+vhs docs/demo.tape
 ```
 
 ## License
