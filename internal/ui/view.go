@@ -59,8 +59,9 @@ func (m *Model) renderNote(toTop bool) {
 	}
 	out := m.saved
 	if m.renderer != nil {
-		if rendered, err := m.renderer.Render(m.saved); err == nil {
-			out = strings.Trim(rendered, "\n")
+		var colors palette
+		if rendered, err := m.renderer.Render(colors.colorize(m.saved)); err == nil {
+			out = colors.paint(strings.Trim(rendered, "\n"))
 		}
 	}
 	offset := m.viewport.YOffset
